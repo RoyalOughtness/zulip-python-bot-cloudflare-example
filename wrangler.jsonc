@@ -1,0 +1,16 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hello-python",
+	"main": "src/entry.py",
+	"compatibility_date": "2025-11-02",
+	"compatibility_flags": [
+		"python_workers"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"ZULIP_EMAIL": "hello-bot@your-zulip-organization.zulipchat.com",
+		"ZULIP_SITE": "https://your-zulip-organization.zulipchat.com"
+	}
+}
