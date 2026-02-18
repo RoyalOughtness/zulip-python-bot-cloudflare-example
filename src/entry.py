@@ -1,17 +1,18 @@
-from workers import WorkerEntrypoint, Response
+from typing import Any, Dict, Optional
+from workers import WorkerEntrypoint, Request, Response
 import json
 
 from zulip import Client
-from zulip_bots.lib import ExternalBotHandler
+from zulip_bots.lib import AbstractBotHandler, ExternalBotHandler
 
 class HelloWorldHandler:
-    def handle_message(self, message, bot_handler):
-        content = "I am responding from cloudflare"
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
+        content = "beep boop"
         bot_handler.send_reply(message, content)
         bot_handler.react(message, "wave")
 
 class Default(WorkerEntrypoint):
-    async def fetch(self, request):
+    async def fetch(self, request: Request) -> Response:
         client = Client(
             email=self.env.ZULIP_EMAIL,
             api_key=self.env.ZULIP_API_KEY,
@@ -25,13 +26,14 @@ class Default(WorkerEntrypoint):
         )
 
         try:
-            payload = await request.json()
-            message = payload.get("message")
-            
-            if message:
-                handler = HelloWorldHandler()
-                handler.handle_message(message, bot_handler)
-                
+            payload: Optional[Dict[str, Any]] = await request.json()
+            if not payload:
+                return Response.json({"error": "Missing request content"}, status=400)
+            message: Dict[str, Any] = payload.get("message")
+            if not message:
+                return Response.json({"error": "Missing 'message' in request"}, status=400)
+            handler = HelloWorldHandler()
+            handler.handle_message(message, bot_handler)
             return Response(json.dumps({"result": "success"}), status=200)
             
         except Exception as e:

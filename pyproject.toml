@@ -5,10 +5,8 @@ description = "Python hello world worker"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "webtypy==0.1.7",
     "zulip==0.9.1",
-    "zulip-bots==0.9.1",
-    "requests==2.32.5"
+    "zulip-bots==0.9.1"
 ]
 
 [dependency-groups]
